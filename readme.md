@@ -1,5 +1,5 @@
-# Proof of Concept 3
-PoC3 of the Ethereum assertion protocol.
+# Implemantation of Assertion Concept
+This is an implementation of the Ethereum assertion protocol for checking its functionality.
 
 # Prerequisites
 ## Install Python Packages
