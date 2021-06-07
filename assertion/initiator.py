@@ -11,6 +11,7 @@ Providing the assertion initiator functionalities
 5. Send Assertion Challenge
 6. Publish Transaction
 """
+# Includes
 import os, sys
 from _pydecimal import Decimal
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,6 +24,9 @@ from assertion.base_node import BaseNode
 from assertion.functions import FUNCTIONS
 from helper.assertion_message import pack_message
 from helper.misc import pause
+
+# Defines
+TIMEOUT = 600  # 10 min
 
 
 class AssertionInitiator(BaseNode):
@@ -76,7 +80,7 @@ class AssertionInitiator(BaseNode):
             # Test 3
             #tx_hash = Web3.toBytes(hexstr='0x3a5ab9d2165971e7e5d9aa5e4e7b06945a19b87569446ea5603f9f41f8088e42')
         
-        tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash)
+        tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=TIMEOUT)
         contract_address = tx_receipt.contractAddress # '0x7f0A014d768b5051997C2193615946d29d9B69A3'
         
         if self._verbose:
@@ -113,7 +117,7 @@ class AssertionInitiator(BaseNode):
                 # Test 2
                 tx_hash = Web3.toBytes(hexstr='0xe60db752685dd07da44b2c6cff02a4785a206e75f5bd8649cb234249ebdc900a')
             
-            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash)
+            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=TIMEOUT)
             
             if self._verbose:
                 print("SUCCESS!")
@@ -154,7 +158,7 @@ class AssertionInitiator(BaseNode):
                 # Test 3
                 #tx_hash = Web3.toBytes(hexstr='0x59416e3eea98c8f33f389f56aeae5817c8574c96c32de4ee49d4cc2421e9d61f')
             
-            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash)
+            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=TIMEOUT)
             # Test 1
             # AttributeDict({'blockHash': HexBytes('0x0581b298ea20ebf8ca209dd718c3cd7b4f9f3da4013dd294db1b63b5177343e9'), 'blockNumber': 10166461, 'contractAddress': None, 'cumulativeGasUsed': 7430434, 'from': '0x179b70a2b0b26dfC207A8936DD9cc35144d64e27', 'gasUsed': 43918, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': '0x7f0A014d768b5051997C2193615946d29d9B69A3', 'transactionHash': HexBytes('0x44c82fca078adb8752fba7cab5bcd31a46887e8c38d8d5601a23df8811d0087b'), 'transactionIndex': 23, 'type': '0x0'})
             # Test 3
@@ -237,7 +241,7 @@ class AssertionInitiator(BaseNode):
             else: # Debug
                 tx_hash = Web3.toBytes(hexstr='0xae9f0d5808e946a2e955992c988ac57636514bb768e1a84ff8c6f5e65c35b3b0')
             
-            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash)
+            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=TIMEOUT)
             
             log_to_process = tx_receipt['logs'][0]
             processed_log = contract.events.GetFunctionResult().processLog(log_to_process)
@@ -278,7 +282,7 @@ def main():
     
     # Connect to client and check status
     # Tested with account address 0x7f0A014d768b5051997C2193615946d29d9B69A3
-    ai = AssertionInitiator(waku = False, verbose = verbose_flag)
+    ai = AssertionInitiator(debug = True, waku = False, verbose = verbose_flag)
     ai.set_account_address(initiator_address)
     if ai.connect_to_client() == False:
         return

@@ -10,6 +10,7 @@ Providing the assertion validator functionalities
 4. Publish Proofs
 5. Publish Counterexamples
 """
+# Includes
 import os, sys
 from _pydecimal import Decimal
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,6 +24,9 @@ from assertion.functions import FUNCTIONS
 from check_local.reward_checker import RewardChecker
 from helper.misc import pause
 from assertion.interface import default_interface
+
+# Defines
+TIMEOUT = 600  # 10 min
 
 
 """
@@ -185,7 +189,7 @@ class AssertionValidator(BaseNode):
             else: # Debug
                 tx_hash = Web3.toBytes(hexstr='0xb9c29e1288ff5b1593c80bc48d968b7a7365157560de35cf0724fbb82d5c4a4c')
             
-            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash)
+            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=TIMEOUT)
         
             if self._verbose:
                 print("SUCCESS!")
@@ -211,14 +215,14 @@ class AssertionValidator(BaseNode):
                     return
                 
                 # Currently only called with one parameter
-                #tx_hash = contract.functions.publishProof(counterexample[1]).transact()
+                tx_hash = contract.functions.publishCounterexample(counterexample[1]).transact()
             elif not self._debug and self._infura: # Connecting via infura call
                 print("E: Infura transacting not implemented yet!") # ToDo
                 return
             else: # Debug
                 tx_hash = '' # ToDo
             
-            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash)
+            tx_receipt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=TIMEOUT)
         
             if self._verbose:
                 print("SUCCESS!")
@@ -240,7 +244,7 @@ def main():
     verbose = True
     pause_flag = True
     
-    av = AssertionValidator(waku = False, verbose = verbose)
+    av = AssertionValidator(debug = True, waku = False, verbose = verbose)
     av.set_account_address(validator_address)
     if not av.connect_to_client(address_cnt=1):
         return
